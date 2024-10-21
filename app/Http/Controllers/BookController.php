@@ -7,9 +7,6 @@ use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $books = Book::all();
@@ -27,44 +24,20 @@ class BookController extends Controller
         $buku->price = $request->price;
         $buku->published = $request->published;
         $buku->save();
-        
-        return redirect("/books");
+        return redirect(route('books.index'));
     }
-    
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-    
-    public function edit(string $id)
-    {
-        $book = Book::find($id);
-        // dd($book);
+    public function edit(Book $book){
         return view('book.edit',compact("book"));
-        
     }
-    public function update(Request $request, string $id)
+    public function update(Request $request, Book $book)
     {
-        $buku = Book::find($id);
-        $buku->title = $request->title;
-        $buku->author = $request->author;
-        $buku->price = $request->price;
-        $buku->published = $request->published;
-        $buku->save();
-        
-        return redirect("/books");
+        $book->update($request->all());
+        $book->save();        
+        return redirect(route('books.index'));
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Book $book)
     {
-        $buku = Book::find($id);
-        $buku->delete();
-        return redirect("/books");
+        $book->delete();
+        return redirect(route('books.index'));
     }
 }

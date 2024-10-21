@@ -1,15 +1,17 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BookController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function(){
     return redirect("/books");
 });
-// Route::get('/books', [BookController::class, 'index'])->name("books.index");
-// Route::get('/books/create', [BookController::class, 'create'])->name("books.create");
-// Route::post('/books/create', [BookController::class, 'store'])->name("books.store");
-// Route::delete('/books/{id}', [BookController::class, 'destroy'])->name("books.destroy");
-// Route::get('/books/update/{id}', [BookController::class, 'edit'])->name("books.edit");
-// Route::post('/books/update/{id}', [BookController::class, 'update'])->name("books.update");
-Route::resource('books',BookController::class)->except('show');
+Route::controller(LoginController::class)->group(function(){
+    Route::get('register','register')->name('register');
+    Route::post('store','store')->name('store');
+    Route::get('login','login')->name('login');
+    Route::post('authenticate','authenticate')->name('authenticate');
+    Route::get('logout','logout')->name('logout');
+});
+Route::resource('books',BookController::class)->except('show')->middleware('auth');

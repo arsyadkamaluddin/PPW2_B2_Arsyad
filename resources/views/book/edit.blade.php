@@ -3,6 +3,7 @@
     <h4 class="text-center mt-12">Ubah Data Buku</h4>
     <form action="{{route('books.update',$book->id)}}" method="POST">
         @csrf
+        @method('PUT')
         <div class="mb-3">
             <label class="form-label">Judul Buku</label>
             <input value="{{$book->title}}" name="title" type="text" class="form-control" placeholder="Judul Buku" required>
