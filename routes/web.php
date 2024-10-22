@@ -4,9 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BookController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function(){
-    return redirect("/books");
-});
+Route::redirect('/','/books');
 Route::controller(LoginController::class)->group(function(){
     Route::get('register','register')->name('register');
     Route::post('store','store')->name('store');
