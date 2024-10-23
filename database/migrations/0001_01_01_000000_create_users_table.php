@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('email')->unique();
             $table->string('password');
+            $table->enum("level",["admin","user"]);
             $table->timestamps();
         });
         Schema::create('sessions', function (Blueprint $table) {

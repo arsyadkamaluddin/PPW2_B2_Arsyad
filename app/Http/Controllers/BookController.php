@@ -29,6 +29,10 @@ class BookController extends Controller
     public function edit(Book $book){
         return view('book.edit',compact("book"));
     }
+    public function admin(){
+        $books = Book::all();
+        return view('book.index',compact("books"));
+    }
     public function update(Request $request, Book $book)
     {
         $book->update($request->all());

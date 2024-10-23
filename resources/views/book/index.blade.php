@@ -3,7 +3,18 @@
 
 <a class="mt-2 btn btn-primary" href="{{route("books.create")}}">Tambah Buku</a>
 <a class="mt-2 btn btn-danger" href="{{route("logout")}}">Logout</a>
+@if ($message= Session::get('error'))
+<div class="alert alert-danger mt-3">
+    {{ $message }}
+</div>
     
+@endif
+@if (Auth::user()->level=="admin")
+<div class="alert alert-success mt-3">
+    Selamat datang admin
+</div>
+    
+@endif
 <table class="table">
     <thead>
         <tr>

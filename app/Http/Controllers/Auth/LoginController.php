@@ -27,6 +27,7 @@ class LoginController extends Controller
         User::create([
             "email"=> $request->email,
             "password"=> Hash::make($request->password),
+            "level"=>"user"
         ]);
         return redirect(route('login'));
     }

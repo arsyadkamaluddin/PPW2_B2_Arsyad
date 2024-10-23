@@ -13,3 +13,4 @@ Route::controller(LoginController::class)->group(function(){
     Route::get('logout','logout')->name('logout');
 });
 Route::resource('books',BookController::class)->except('show')->middleware('auth');
+Route::get('admin',[BookController::class,'admin'])->name('admin')->middleware('role');
