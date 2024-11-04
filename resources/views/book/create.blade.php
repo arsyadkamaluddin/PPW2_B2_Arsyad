@@ -1,7 +1,7 @@
 @extends('layout.main')
 @section('container')
     <h4 class="text-center mt-12">Tambah Data Buku</h4>
-    <form action="{{route('books.store')}}" method="POST">
+    <form action="{{route('books.store')}}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="mb-3">
             <label class="form-label">Judul Buku</label>
@@ -18,6 +18,10 @@
         <div class="mb-3">
             <label class="form-label">Terbit</label>
             <input name="published" type="date" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Foto</label>
+            <input name="photo" type="file" class="form-control">
         </div>
         <div class="mb-3">
             <input type="submit" class="form-control btn btn-primary">
