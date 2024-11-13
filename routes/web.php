@@ -6,8 +6,6 @@ use App\Http\Controllers\Mail\RegistrationMailController;
 use App\Http\Controllers\PhotoController;
 use Illuminate\Support\Facades\Route;
 
-
-Route::get('mail-send',[RegistrationMailController::class,'index']);
 Route::redirect('/','/books');
 Route::controller(LoginController::class)->group(function(){
     Route::get('register','register')->name('register');
