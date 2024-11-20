@@ -13,8 +13,7 @@ class PhotoController extends Controller
      */
     public function index()
     {
-        $photos = Photo::paginate(10);
-        return view('photo.index', compact('photos'));
+        return view('photo.index');
     }
 
     /**
@@ -33,7 +32,7 @@ class PhotoController extends Controller
         $request->validate([
             'title' => 'required|max:255',
             'description' => 'required',
-            'picture' => 'image|max:1999'
+            'picture' => 'image'
         ]);
         if ($request->hasFile('picture')) {
             $extension = $request->file('picture')->getClientOriginalExtension();
