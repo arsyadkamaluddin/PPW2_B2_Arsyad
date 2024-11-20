@@ -9,12 +9,39 @@ use Illuminate\Http\Request;
 class PhotoController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Schema(
+     *     schema="GalleryResource",
+     *     type="object",
+     *     @OA\Property(property="id", type="integer"),
+     *     @OA\Property(property="title", type="string"),
+     *     @OA\Property(property="description", type="string"),
+     *     @OA\Property(property="picture", type="string"),
+     *     @OA\Property(property="created_at", type="date", format="date"),
+     *     @OA\Property(property="updated_at", type="date", format="date")
+     * )
+     *
+     * @OA\Get(
+     *   tags={"Gallery"},
+     *   path="/api/gallery",
+     *   summary="Get all galleries data",
+     *   @OA\Response(
+     *     response=200,
+     *     description="OK",
+     *     @OA\JsonContent(
+     *       type="object",
+     *       @OA\Property(
+     *         property="data",
+     *         type="array",
+     *         @OA\Items(ref="#/components/schemas/GalleryResource")
+     *       ),
+     *     )
+     *   )
+     * )
      */
     public function index()
     {
         $photos = Photo::all();
-        return response()->json(["message"=>"Berhasil mendapatkan semua data foto","success"=>true,"galleries"=>$photos]);
+        return response()->json(["message" => "Berhasil mendapatkan semua data foto", "success" => true, "galleries" => $photos]);
     }
 
     /**
