@@ -7,37 +7,28 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\File;
 use Intervention\Image\Facades\Image;
 
 class LoginRegisterController extends Controller
 {
-    /**
-     * Instantiate a new LoginRegisterController instance.
-     */
     public function __construct()
     {
+        $this->middleware('auth')->only([
+            'uploadAvatar',
+        ]);
         $this->middleware('guest')->except([
             'logout',
-            'dashboard'
+            'dashboard',
+            'profile',
+            'uploadAvatar',
         ]);
     }
-
-    /**
-     * Display a registration form.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function register()
     {
         return view('auth.register');
     }
-
-    /**
-     * Store a new user.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -46,36 +37,9 @@ class LoginRegisterController extends Controller
             'password' => 'required|min:8|confirmed',
             'photo' => 'required|image|nullable|max:1999'
         ]);
-
+        
         if ($request->hasFile('photo')) {
-            $filenameWithExt = $request->file('photo')->getClientOriginalName();
-            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-            $extension = $request->file('photo')->getClientOriginalExtension();
-            // $filenameSimpan = $filename . '_' . time() . '.' . $extension;
-
-            $basename = uniqid() . time();
-            $smallFilename  = "small_{$basename}.{$extension}";
-            $mediumFilename  = "medium_{$basename}.{$extension}";
-            $largeFilename  = "large_{$basename}.{$extension}";
-
-            $filenameSimpan = "{$basename}.{$extension}";
-            $path = $request->file('photo')->storeAs('photos', $filenameSimpan);
-
-            // $request->file('photo')->storeAs("photos", $smallFilename);
-            // $request->file('photo')->storeAs("photos", $mediumFilename);
-            // $request->file('photo')->storeAs("photos", $largeFilename);
-
-            // // small
-            // $smallThumbnailPath = storage_path("app/public/photos/{$smallFilename}");
-            // $this->createThumbnail($smallThumbnailPath, 150, 93);
-            // //medium
-            // $mediumThumbnailPath = storage_path("app/public/photos/{$mediumFilename}");
-            // $this->createThumbnail($mediumThumbnailPath, 300, 185);
-            // //large
-            // $largeThumbnailPath = storage_path("app/public/photos/{$largeFilename}");
-            // $this->createThumbnail($largeThumbnailPath, 550, 340);
-        } else {
-            $path = 'noimage.png';
+            $path = Storage::disk('public')->put('avatars',$request->file('photo'));            
         }
 
         User::create([
@@ -98,26 +62,18 @@ class LoginRegisterController extends Controller
         return redirect()->route('dashboard')
             ->withSuccess('You have successfully registered & logged in!');
     }
-
-    /**
-     * Display a login form.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function login()
     {
         return view('auth.login');
     }
-
-    /**
-     * Authenticate the user.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function authenticate(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->validate(
+            [
+                "email"=>"required",
+                "password"=>"required"
+            ]
+        );
 
         if (Auth::attempt($credentials)) {
             return redirect()->route('dashboard')
@@ -126,12 +82,6 @@ class LoginRegisterController extends Controller
 
         return back()->withErrors(['login' => 'Login failed.']);
     }
-
-    /**
-     * Display a dashboard to authenticated users.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function dashboard()
     {
         if (Auth::check()) {
@@ -143,13 +93,6 @@ class LoginRegisterController extends Controller
                 'email' => 'Please login to access the dashboard.',
             ])->onlyInput('email');
     }
-
-    /**
-     * Log out the user from application.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function logout(Request $request)
     {
         Auth::logout();
@@ -158,14 +101,6 @@ class LoginRegisterController extends Controller
         return redirect()->route('login')
             ->withSuccess('You have logged out successfully!');;
     }
-
-    // public function createThumbnail($path, $width, $height)
-    // {
-    //     $img = Image::make($path)->resize($width, $height, function ($constraint) {
-    //         $constraint->aspectRatio();
-    //     });
-    //     $img->save($path);
-    // }
     public function profile()
     {
         return view('profile');
@@ -174,24 +109,25 @@ class LoginRegisterController extends Controller
     public function uploadAvatar(Request $request)
     {
         $request->validate([
-            'photo' => 'required|image|nullable|max:1999'
+            'photo' => [
+                "required",
+                "image",
+                File::types(['jpg','jpeg','png']),
+                "max:1999",
+            ]
         ]);
-
-        if ($request->hasFile('photo')) {
-            $filenameWithExt = $request->file('photo')->getClientOriginalName();
-            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-            $extension = $request->file('photo')->getClientOriginalExtension();
-
-            $basename = uniqid() . time();
-            $filenameSimpan = "{$basename}.{$extension}";
-            $path = $request->file('photo')->storeAs('photos', $filenameSimpan);
-        } else {
-            $path = 'noimage.png';
-        }
-
-        if ($updated) {
+        try {
+            if ($request->hasFile('photo')) {
+                $new = Storage::disk('public')->put('avatars',$request->file('photo'));
+                $user = auth()->user();
+                if($user->photo){
+                    Storage::disk('public')->delete($user->photo);
+                }
+                $user->photo = $new;
+                $user->save();
+            }
             return redirect()->route('profile')->withSuccess('User updated successfully');
-        } else {
+        } catch (\Throwable $th) {
             return redirect()->route('profile')->withError('Failed to update user');
         }
     }

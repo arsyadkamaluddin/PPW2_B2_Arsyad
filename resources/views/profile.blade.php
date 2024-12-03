@@ -4,16 +4,21 @@
 
 <div class="row justify-content-center mt-5">
     <div class="col-md-8">
-
+        @auth           
         <div class="card">
             <div class="card-header">Profile</div>
             <div class="card-body">
-                @if ($message = Session::get('error'))
+                @if ($message = Session::get('success'))
                 <div class="alert alert-success">
                     {{ $message }}
                 </div>
                 @endif
-                <form action="{{ route('profile.store') }}" method="post" enctype="multipart/form-data">
+                @if ($message = Session::get('error'))
+                <div class="alert alert-error">
+                    {{ $message }}
+                </div>
+                @endif
+                <form action="{{ route('profile.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-3 row">
                         <label for="name" class="col-md-4 col-form-label text-md-end text-start">Name</label>
@@ -49,12 +54,20 @@
                     </div>
                     <div class="mb-3 row">
                         <input type="hidden" name="id" value="{{ Auth::user()->id }}">
-                        <input type="submit" class="col-md-3 offset-md-5 btn btn-primary" value="Register">
+                        <button type="submit" class="col-md-3 offset-md-5 btn btn-primary">Update</button>
                     </div>
 
                 </form>
             </div>
         </div>
+        @else
+        <div class="card">
+            <div class="card-header">Profile</div>
+            <div class="card-body">
+                You are not authorized to access this page
+            </div>
+        </div>
+        @endauth
     </div>
 </div>
 

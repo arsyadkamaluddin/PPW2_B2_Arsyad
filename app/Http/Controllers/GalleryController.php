@@ -133,8 +133,13 @@ class GalleryController extends Controller
      */
     public function api()
     {
-        $posts = Post::all();
-
-        return $posts;
+        $res = [
+            "messages"=> "Galleries processed successfully",
+            "success"=>true,
+            "data"=>[
+                "galleries"=>Post::paginate(2)
+            ]
+        ];
+        return response()->json($res);
     }
 }

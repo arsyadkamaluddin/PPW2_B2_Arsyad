@@ -17,18 +17,18 @@ class PasswordResetController extends Controller
 
     public function sendResetLink(Request $request)
     {
-        $email = $request->input('email');
-
+        $credentials = $request->validate([
+            "email"=>'required|email'
+        ]);
         try {
-            $status = Password::sendResetLink([]);
-
+            $status = Password::sendResetLink($credentials);
+    
             if ($status === Password::RESET_LINK_SENT) {
-                return redirect()->route('login')->with('message', 'Reset link sent!');
+                return redirect()->back()->withSuccess('Reset link sent!');
             }
-
-            return redirect()->back()->withErrors(['email' => __($status)]);
+            return redirect()->back()->withError("Reset didn't link sent!");
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['email' => 'Failed to send reset link. Please try again later.']);
+            return redirect()->back()->withError("Reset didn't link sent!");
         }
     }
 

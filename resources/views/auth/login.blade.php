@@ -9,6 +9,11 @@
             <div class="card-header">Login</div>
             <div class="card-body">
                 @if ($message = Session::get('error'))
+                <div class="alert alert-error">
+                    {{ $message }}
+                </div>
+                @endif
+                @if ($message = Session::get('success'))
                 <div class="alert alert-success">
                     {{ $message }}
                 </div>
@@ -18,7 +23,7 @@
                     <div class="mb-3 row">
                         <label for="email" class="col-md-4 col-form-label text-md-end text-start">Email Address</label>
                         <div class="col-md-6">
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="username" name="username" value="{{ old('username') }}">
+                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}">
                             @if ($errors->has('email'))
                             <span class="text-danger">{{ $errors->first('email') }}</span>
                             @endif

@@ -8,6 +8,16 @@
         <div class="card">
             <div class="card-header">Forgot Password</div>
             <div class="card-body">
+                @if ($message = Session::get('error'))
+                <div class="alert alert-danger">
+                    {{ $message }}
+                </div>
+                @endif
+                @if ($message = Session::get('success'))
+                <div class="alert alert-success">
+                    {{ $message }}
+                </div>
+                @endif
                 <form action="{{ route('password.email') }}" method="POST">
                     @csrf
                     <div class="mb-3 row">
